@@ -7,6 +7,18 @@ function deveGerarAlerta(int $quantidade, int $limite): bool {
     return $quantidade >= $limite;
 }
 
+function contarFalhas(array $eventos): int {
+    $total = 0;
+
+    foreach ($eventos as $evento) {
+        if ($evento['tipo'] === 'login_failed') {
+            $total++;
+        }
+    }
+
+    return $total;
+}
+
 // 1. Eventos simulados
 $eventos = [
     ['email' => 'rodrigogbhs@gmail.com', 'tipo' => 'login_failed'],
@@ -19,7 +31,7 @@ $eventos = [
 ];
 
 // 2. Variáveis de controle
-$falhas = 0;
+$falhas = contarFalhas($eventos);
 $falhasPorUsuario = [];
 $limiteAlerta = 3;
 
@@ -30,8 +42,6 @@ foreach ($eventos as $evento) {
     $tipo = $evento['tipo'];
 
     if ($tipo === 'login_failed') {
-
-        $falhas++;
 
         // Contabiliza falhas individuais
         if (isset($falhasPorUsuario[$email])) {
