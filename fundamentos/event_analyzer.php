@@ -1,23 +1,7 @@
+
 <?php
 
-// EVENT ANALYZER V3 — IncidentReplay
-
-// 0. Funções
-function deveGerarAlerta(int $quantidade, int $limite): bool {
-    return $quantidade >= $limite;
-}
-
-function contarFalhas(array $eventos): int {
-    $total = 0;
-
-    foreach ($eventos as $evento) {
-        if ($evento['tipo'] === 'login_failed') {
-            $total++;
-        }
-    }
-
-    return $total;
-}
+require_once __DIR__ . '/funcoes.php';
 
 // 1. Eventos simulados
 $eventos = [
@@ -30,7 +14,7 @@ $eventos = [
     ['email' => 'carlos@email.com', 'tipo' => 'login_failed'],
 ];
 
-// 2. Variáveis de controle
+// 2. Configurações e contadores
 $falhas = contarFalhas($eventos);
 $falhasPorUsuario = [];
 $limiteAlerta = 3;
@@ -38,12 +22,16 @@ $limiteAlerta = 3;
 // 3. Processamento dos eventos
 foreach ($eventos as $evento) {
 
+    if (!is_array($evento) || !eventoValido($evento)) {
+        echo "Evento inválido ignorado\n";
+        continue;
+    }
+
     $email = $evento['email'];
     $tipo = $evento['tipo'];
 
     if ($tipo === 'login_failed') {
 
-        // Contabiliza falhas individuais
         if (isset($falhasPorUsuario[$email])) {
             $falhasPorUsuario[$email]++;
         } else {
